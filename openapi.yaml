@@ -1,0 +1,255 @@
+
+openapi: 3.0.3
+
+info:
+  title: JSONPlaceholder Posts API
+  version: 1.0.0
+  description: |
+    REST API Testing & Technical Documentation project.
+
+    This specification documents the JSONPlaceholder
+    Posts API based on public documentation and
+    selected test scenarios executed using Postman.
+
+    POST, PUT, and DELETE operations are simulated.
+    Changes are not persisted permanently.
+
+servers:
+  - url: https://jsonplaceholder.typicode.com
+    description: JSONPlaceholder public API
+
+tags:
+  - name: Posts
+    description: Operations for retrieving and managing posts
+
+paths:
+
+  /posts:
+    get:
+      tags:
+        - Posts
+      summary: Get all posts
+      description: |
+        Retrieves the list of posts.
+
+        The optional userId query parameter can
+        be used to filter posts by user.
+
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          description: Filter posts by user ID
+          schema:
+            type: integer
+          example: 1
+
+      responses:
+        '200':
+          description: Posts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+              example:
+                - userId: 1
+                  id: 1
+                  title: sunt aut facere repellat provident occaecati excepturi optio reprehenderit
+                  body: Example post content
+
+    post:
+      tags:
+        - Posts
+      summary: Create a new post
+      description: |
+        Simulates creating a new post.
+
+        The operation does not permanently
+        store the created resource.
+
+        During testing, a request without
+        the title field was accepted with HTTP 201.
+
+      requestBody:
+        required: true
+        description: Post data to submit
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+            example:
+              title: API Testing Practice
+              body: This post was created using Postman.
+              userId: 1
+
+      responses:
+        '201':
+          description: Post creation simulated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                userId: 1
+                id: 101
+                title: API Testing Practice
+                body: This post was created using Postman.
+
+  /posts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique post identifier
+        schema:
+          type: integer
+        example: 1
+
+    get:
+      tags:
+        - Posts
+      summary: Get a post by ID
+      description: |
+        Retrieves a single post using its ID.
+
+        Tested IDs included:
+        - 1: Existing post
+        - 100: Upper boundary of the sample dataset
+        - 101: Post not found
+        - 999999: Post not found
+
+      responses:
+        '200':
+          description: Post retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                userId: 1
+                id: 1
+                title: sunt aut facere repellat provident occaecati excepturi optio reprehenderit
+                body: Example post content
+
+        '404':
+          description: Post not found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+              example: {}
+
+    put:
+      tags:
+        - Posts
+      summary: Update an existing post
+      description: |
+        Simulates replacing an existing post.
+
+        Changes are not saved permanently.
+
+      requestBody:
+        required: true
+        description: Updated post data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+            example:
+              id: 1
+              title: Updated API Testing Post
+              body: This post was updated using PUT in Postman.
+              userId: 1
+
+      responses:
+        '200':
+          description: Post update simulated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                id: 1
+                title: Updated API Testing Post
+                body: This post was updated using PUT in Postman.
+                userId: 1
+
+    delete:
+      tags:
+        - Posts
+      summary: Delete a post by ID
+      description: |
+        Simulates deleting an existing post.
+
+        The deletion is not persisted permanently.
+
+        In the tested scenario, the server
+        returned HTTP 200 and an empty JSON object.
+
+      responses:
+        '200':
+          description: Delete request processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+              example: {}
+
+components:
+  schemas:
+
+    Post:
+      type: object
+      description: A post returned by JSONPlaceholder
+      required:
+        - userId
+        - id
+        - title
+        - body
+      properties:
+        userId:
+          type: integer
+          description: ID of the user who owns the post
+          example: 1
+
+        id:
+          type: integer
+          description: Unique post identifier
+          example: 1
+
+        title:
+          type: string
+          description: Post title
+          example: API Testing Practice
+
+        body:
+          type: string
+          description: Post content
+          example: This post was created using Postman.
+
+    PostInput:
+      type: object
+      description: |
+        Input data for creating a post.
+
+        The title field was omitted successfully
+        in one tested scenario.
+      properties:
+        title:
+          type: string
+          description: Post title
+          example: API Testing Practice
+
+        body:
+          type: string
+          description: Post content
+          example: This post was created using Postman.
+
+        userId:
+          type: integer
+          description: User identifier
+          example: 1
